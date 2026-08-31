@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>သတ္တမတန်း သိပ္ပံ - အပင်များ၏ မျိုးပွားခြင်း စစ်ဆေးမှု</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Padauk', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            /* ကလေးများ သဘောကျမည့် သဘာဝအရောင်စုံ Gradient နောက်ခံ */
+            background: linear-gradient(135deg, #a8ff78 0%, #78ffd6 100%);
+            color: #2c3e50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* နောက်ခံ အီမိုဂျီများ လွင့်မျောနေသည့် Animation */
+        .bg-bubbles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .bg-bubbles li {
+            position: absolute;
+            list-style: none;
+            display: block;
+            font-size: 24px;
+            bottom: -50px;
+            animation: square 15s infinite linear;
+        }
+
+        .bg-bubbles li:nth-child(1) { left: 10%; animation-delay: 0s; font-size: 35px; }
+        .bg-bubbles li:nth-child(2) { left: 20%; animation-delay: 2s; animation-duration: 12s; }
+        .bg-bubbles li:nth-child(3) { left: 25%; animation-delay: 4s; }
+        .bg-bubbles li:nth-child(4) { left: 40%; animation-delay: 0s; animation-duration: 18s; font-size: 40px; }
+        .bg-bubbles li:nth-child(5) { left: 70%; animation-delay: 0s; }
+        .bg-bubbles li:nth-child(6) { left: 80%; animation-delay: 3s; font-size: 30px; }
+        .bg-bubbles li:nth-child(7) { left: 32%; animation-delay: 7s; }
+
+        @keyframes square {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; }
+        }
+
+        .quiz-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
+            position: relative;
+            z-index: 1;
+            border: 4px solid #ffffff;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px dashed #b2bec3;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #27ae60;
+            font-size: 22px;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #636e72;
+            font-size: 14px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            background-color: #dfe6e9;
+            height: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            border: 1px solid #b2bec3;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #f1c40f, #2ecc71);
+            width: 0%;
+            transition: width 0.4s ease;
+            border-radius: 10px;
+        }
+
+        .question-card.active {
+            display: block;
+            animation: bounceIn 0.5s ease-in-out;
+        }
+
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .question-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            background: #e8f8f5;
+            padding: 15px;
+            border-radius: 14px;
+            border-left: 6px solid #2ecc71;
+        }
+
+        .options-list {
+            list-style: none;
+        }
+
+        .option-item {
+            background-color: #ffffff;
+            border: 2px solid #74b9ff;
+            border-radius: 14px;
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+            font-weight: bold;
+            color: #2d3436;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .option-item:hover {
+            background-color: #74b9ff;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .option-item.correct {
+            background-color: #2ecc71 !important;
+            border-color: #27ae60 !important;
+            color: white !important;
+        }
+
+        .option-item.incorrect {
+            background-color: #ff7675 !important;
+            border-color: #d63031 !important;
+            color: white !important;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            border-top: 2px dashed #b2bec3;
+            padding-top: 15px;
+        }
+
+        .progress {
+            font-size: 15px;
+            color: #2d3436;
+            font-weight: bold;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #0984e3, #6c5ce7);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(9, 132, 227, 0.3);
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .btn:disabled {
+            background: #b2bec3;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-screen {
+            text-align: center;
+            display: none;
+        }
+
+        .score-box {
+            font-size: 50px;
+            font-weight: bold;
+            color: #6c5ce7;
+            margin: 20px 0;
+            background: #f1f2f6;
+            padding: 15px;
+            border-radius: 20px;
+            display: inline-block;
+            min-width: 180px;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+        }
+    </style>
+</head>
+<body>
+
+<!-- Floating Background Emojis -->
+<ul class="bg-bubbles">
+    <li>🌸</li>
+    <li>🍃</li>
+    <li>🌻</li>
+    <li>🌱</li>
+    <li>ထ</li>
+    <li>🌺</li>
+    <li>🌿</li>
+</ul>
+
+<div class="quiz-container">
+    <div class="header">
+        <h1>🌱 အပင်များ၏ မျိုးပွားခြင်း စစ်ဆေးမှု 🌸</h1>
+        <p>သတ္တမတန်း သိပ္ပံ - အခန်း (၃)</p>
+    </div>
+
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <div id="quiz-body"></div>
+
+    <div id="result-screen" class="result-screen">
+        <h2 id="result-title">🎉 အလွန်တော်တယ်! 🎉</h2>
+        <p>သင့်ရမှတ်မှာ -</p>
+        <div class="score-box" id="score-display">0 / 20</div>
+        <div>
+            <button class="btn restart-btn" onclick="restartQuiz()">🔄 ပြန်လည်ဖြေဆိုမည်</button>
+        </div>
+    </div>
+
+    <div class="footer" id="quiz-footer">
+        <span class="progress" id="progress-text">မေးခွန်း ၁ / ၂၀</span>
+        <button class="btn" id="next-btn" onclick="nextQuestion()" disabled>နောက်တစ်ခု ➔</button>
+    </div>
+</div>
+
+<script>
+    const quizData = [
+        { question: "၁။ အပင်များတွင် မျိုးဆက်သစ်သမီးများ မွေးထုတ်ပေးခြင်းကို မည်သို့ခေါ်သနည်း။", options: ["ဆဲလ်ကွဲခြင်း", "မျိုးပွားခြင်း", "အစာချက်ခြင်း", "ကြီးထွားခြင်း"], correct: 1 },
+        { question: "၂။ မျိုးပွားခြင်းတွင် မည်သည့်အမျိုးအစား အဓိက (၂) မျိုး ရှိသနည်း။", options: ["လိင်မဲ့မျိုးပွားခြင်းနှင့် လိင်စုံမျိုးပွားခြင်း", "လိင်စုံမျိုးပွားခြင်းနှင့် လိင်ကွဲမျိုးပွားခြင်း", "လိင်မဲ့မျိုးပွားခြင်းနှင့် လိင်ရှိမျိုးပွားခြင်း", "အမှားအမှန်မရှိပါ"], correct: 2 },
+        { question: "၃။ မိဘတစ်ဦးတည်းမှ သက်ရှိမျိုးဆက်သစ် ပွားများခြင်းသည် မည်သည့် မျိုးပွားခြင်းဖြစ်သနည်း။", options: ["လိင်ရှိမျိုးပွားခြင်း", "လိင်မဲ့မျိုးပွားခြင်း", "အစေ့မှမျိုးပွားခြင်း", "ပန်းပွင့်မှမျိုးပွားခြင်း"], correct: 1 },
+        { question: "၄။ လိင်ရှိမျိုးပွားခြင်းတွင် မည်သည့် အစိတ်အပိုင်းများ ပါဝင်သနည်း။", options: ["မိခင်တစ်ဦးတည်း", "ဖခင်တစ်ဦးတည်း", "မိခင်နှင့် ဖခင် (၂) ဦးလုံး", "အမြစ်နှင့် အတံ"], correct: 2 },
+        { question: "၅။ မူလဆဲလ်မှ ဆဲလ်သစ်များ ပွားများလာခြင်းကို မည်သို့ခေါ်သနည်း။", options: ["ဆဲလ်ကွဲခြင်း", "ဆဲလ်ပေါင်းခြင်း", "ဆဲလ်ကြီးခြင်း", "ဆဲလ်သေခြင်း"], correct: 0 },
+        { question: "၆။ လိင်မဲ့မျိုးပွားခြင်းတွင် မည်သည့် ဆဲလ်ကွဲခြင်းမျိုးကို တွေ့ရသနည်း။", options: ["မှိုတက်ဆဲလ်ကွဲခြင်း", "မိက်တိုးဆစ်ဆဲလ်ကွဲခြင်း (Mitosis)", "မေအိုဆစ်ဆဲလ်ကွဲခြင်း (Meiosis)", "ဆဲလ်ပေါင်းစပ်ခြင်း"], correct: 1 },
+        { question: "၇။ လိင်ရှိမျိုးပွားခြင်းတွင် မည်သည့် ဆဲလ်ကွဲခြင်းကို တွေ့ရသနည်း။", options: ["မိက်တိုးဆစ်ဆဲလ်ကွဲခြင်း", "မေအိုဆစ်ဆဲလ်ကွဲခြင်း (Meiosis)", "ရိုးရိုးဆဲလ်ကွဲခြင်း", "ဆဲလ်ပျက်စီးခြင်း"], correct: 1 },
+        { question: "၈။ ပန်းပွင့်ပွင့်သောအပင်များ၏ မျိုးပွားအင်္ဂါမှာ မည်သည်နည်း။", options: ["အရွက်", "အမြစ်", "ပန်းပွင့်", "ပင်စည်"], correct: 2 },
+        { question: "၉။ ပန်းပွင့်တစ်ပွင့်ထဲတွင် ဖိုအင်္ဂါနှင့် မ အင်္ဂါနှစ်မျိုးလုံး ပါဝင်ပါက မည်သို့ခေါ်သနည်း။", options: ["လိင်မစုံပွင့် (Unisexual)", "လိင်စုံပွင့် (Bisexual)", "အမပွင့်", "အဖိုပွင့်"], correct: 1 },
+        { question: "၁၀။ လိင်စုံပွင့် (Bisexual Flower) ၏ ဥပမာတစ်ခုမှာ မည်သည်နည်း။", options: ["သင်္ဘောပွင့်", "အုန်းပွင့်", "ကြာပွင့်", "ထန်းပွင့်"], correct: 2 },
+        { question: "၁၁။ ဖိုအင်္ဂါနှင့် မ အင်္ဂါတို့သည် သီးခြားအပင် သီးခြားပန်းပွင့်များတွင် ပါရှိပါက မည်သို့ခေါ်သနည်း။", options: ["လိင်စုံပွင့်", "လိင်မစုံပွင့် (Unisexual)", "နှစ်မျိုးစုံပွင့်", "အသီးပွင့်"], correct: 1 },
+        { question: "၁၂။ လိင်မစုံပွင့် (Unisexual Flower) ၏ ဥပမာမှာ မည်သည်နည်း။", options: ["ကြာပွင့်", "နှင်းဆီပွင့်", "သင်္ဘောပွင့်", "စံပယ်ပွင့်"], correct: 2 },
+        { question: "၁၃။ ပန်းပွင့်ကို ထောက်မတ်နေအောင် ထောက်ပံ့ပေးထားသော အစိတ်အပိုင်းမှာ မည်သည်နည်း။", options: ["ပွင့်ညှာ (Pedicel)", "ပွင့်ခွက် (Sepal)", "ပွင့်ဇလား (Receptacle)", "ပွင့်ဖတ် (Petal)"], correct: 0 },
+        { question: "၁၄။ ပန်းပွင့်၏ အစိတ်အပိုင်းများကို သယ်ဆောင်ထားသော ခွက်ပုံစံ အစိတ်အပိုင်းမှာ မည်သည်နည်း။", options: ["ပွင့်ညှာ", "ပွင့်ဇလား (Receptacle)", "ပွင့်ခွက်", "ပွင့်ဖတ်"], correct: 1 },
+        { question: "၁၅။ ပန်းပွင့်၏ အပြင်ဘက်ဆုံး အလွှာဖြစ်ပြီး အများအားဖြင့် အစိမ်းရောင်ရှိသော အစိတ်အပိုင်းမှာ မည်သည်နည်း။", options: ["ပွင့်ခွက် (Sepal)", "ပွင့်ဖတ် (Petal)", "ဖိုအင်္ဂါ", "မ အင်္ဂါ"], correct: 0 },
+        { question: "၁၆။ ပန်းဝတ်မှုံကူးခြင်း (Pollination) ပြီးနောက် မည်သည့်အရာ ဖြစ်ပေါ်လာသနည်း။", options: ["သဲကန္တာရ", "သန္ဓေအောင်ခြင်းနှင့် အသီးအစေ့", "အရွက်သစ်", "အမြစ်"], correct: 1 },
+        { question: "၁၇။ အသီး၏ အတွင်းထဲတွင် မည်သည့် အစိတ်အပိုင်း ပါရှိသနည်း။", options: ["အစေ့များ", "ပန်းပွင့်များ", "အရွက်များ", "ဝတ်မှုံများ"], correct: 0 },
+        { question: "၁၈။ အောက်ပါတို့အနက် မည်သည့်အပင်သည် လိင်မစုံပွင့်အပင် ဖြစ်သနည်း။", options: ["အုန်းပင်", "ကြာပင်", "စံပယ်ပင်", "နှင်းဆီပင်"], correct: 0 },
+        { question: "၁၉။ ပန်းပွင့်တစ်ပွင့်၏ အလှအပနှင့် အနံ့ဖြင့် ပိုးမွှားများကို ဆွဲဆောင်ပေးသော အစိတ်အပိုင်းမှာ မည်သည်နည်း။", options: ["ပွင့်ခွက်", "ပွင့်ဖတ် (Petal)", "ပွင့်ညှာ", "ပွင့်ဇလား"], correct: 1 },
+        { question: "၂၀။ ပန်းပွင့်များ၏ အဓိက လုပ်ငန်းတာဝန်မှာ မည်သည်နည်း။", options: ["အစာချက်ရန်", "ရေစုပ်ယူရန်", "မျိုးပွားရန်", "အပင်ကို ထောက်ပံ့ရန်"], correct: 2 }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let selectedOption = null;
+
+    const quizBody = document.getElementById("quiz-body");
+    const progressText = document.getElementById("progress-text");
+    const progressBar = document.getElementById("progress-bar");
+    const nextBtn = document.getElementById("next-btn");
+    const resultScreen = document.getElementById("result-screen");
+    const quizFooter = document.getElementById("quiz-footer");
+    const scoreDisplay = document.getElementById("score-display");
+
+    function loadQuestion() {
+        selectedOption = null;
+        nextBtn.disabled = true;
+        nextBtn.innerText = currentQuestion === quizData.length - 1 ? "အဖြေကြည့်မည် ✨" : "နောက်တစ်ခု ➔";
+
+        const currentData = quizData[currentQuestion];
+        progressText.innerText = `မေးခွန်း ${currentQuestion + 1} / ${quizData.length}`;
+        
+        let progressPercent = ((currentQuestion + 1) / quizData.length) * 100;
+        progressBar.style.width = `${progressPercent}%`;
+
+        let optionsHTML = currentData.options.map((opt, index) => 
+            `<li class="option-item" onclick="selectOption(${index})"><span>${opt}</span><span id="icon-${index}"></span></li>`
+        ).join("");
+
+        quizBody.innerHTML = `
+            <div class="question-card active">
+                <div class="question-title">${currentData.question}</div>
+                <ul class="options-list">${optionsHTML}</ul>
+            </div>
+        `;
+    }
+
+    function selectOption(index) {
+        if (selectedOption !== null) return;
+
+        selectedOption = index;
+        const options = document.querySelectorAll(".option-item");
+        const correctIndex = quizData[currentQuestion].correct;
+
+        options.forEach((opt, idx) => {
+            if (idx === correctIndex) {
+                opt.classList.add("correct");
+                document.getElementById(`icon-${idx}`).innerText = " ✅";
+            }
+            if (idx === selectedOption && selectedOption !== correctIndex) {
+                opt.classList.add("incorrect");
+                document.getElementById(`icon-${idx}`).innerText = " ❌";
+            }
+        });
+
+        if (selectedOption === correctIndex) {
+            score++;
+        }
+
+        nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+        currentQuestion++;
+        if (currentQuestion < quizData.length) {
+            loadQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        quizBody.style.display = "none";
+        quizFooter.style.display = "none";
+        document.querySelector('.progress-bar-container').style.display = 'none';
+        resultScreen.style.display = "block";
+        scoreDisplay.innerText = `${score} / ${quizData.length}`;
+
+        const resultTitle = document.getElementById("result-title");
+        if(score >= 15) {
+            resultTitle.innerText = "🌟 အလွန်တော်တယ်! ထူးချွန်ပါတယ်! 🌟";
+        } else if(score >= 10) {
+            resultTitle.innerText = "👍 တော်ပါတယ်! ထပ်မံကြိုးစားပါ! 👏";
+        } else {
+            resultTitle.innerText = "💪 စိတ်မလျှော့ပါနဲ့! ပြန်လည်လေ့လာကြည့်ရအောင်! 📖";
+        }
+    }
+
+    function restartQuiz() {
+        currentQuestion = 0;
+        score = 0;
+        quizBody.style.display = "block";
+        quizFooter.style.display = "flex";
+        document.querySelector('.progress-bar-container').style.display = 'block';
+        resultScreen.style.display = "none";
+        loadQuestion();
+    }
+
+    loadQuestion();
+</script>
+
+</body>
+</html>
